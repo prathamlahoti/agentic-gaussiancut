@@ -1,0 +1,8 @@
+target,policy,views,pre_target_iou,post_target_iou,depth_modification,structural_change,scope
+room_footstool,fixed,3,0.3126281819278562,0.0,0.8263179153268675,0.8710738063252229,development subset; partial views; pseudo-references; adapted depth
+room_footstool,vlm,3,0.3126281819278562,0.0,0.8263179153268675,0.8710738063252229,development subset; partial views; pseudo-references; adapted depth
+room_footstool,original_v1,3,0.3126281819278562,0.0,0.369735829575921,0.33969610155051083,development subset; partial views; pseudo-references; adapted depth
+room_table,fixed,3,0.9503290842021251,0.028587167666927604,0.605231610235008,0.9375295261914687,development subset; partial views; pseudo-references; adapted depth
+room_table,vlm,3,0.9503290842021251,0.05273972602739726,0.6557312366339053,0.9366111111111111,development subset; partial views; pseudo-references; adapted depth
+counter_plant,fixed,3,0.8361850906097764,0.0,0.43293015905557436,0.8850011668952972,development subset; partial views; pseudo-references; adapted depth
+counter_plant,vlm,3,0.8361850906097764,0.0,0.43186091987203196,0.8602721667696395,development subset; partial views; pseudo-references; adapted depth

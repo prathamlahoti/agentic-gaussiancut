@@ -58,7 +58,8 @@ def score_arm(folder):
     detectable=[r for r in semantic_rows if r['iou_before']>=.30]
     semantic['detectable_pre_views']=len(detectable)
     semantic['acc_seg_30_detectable_only']=float(np.mean([r['iou_after']<.30 for r in detectable])) if detectable else None
-    dep=summarize_depth_results(evaluate_depth_scene(str(folder),verbose=False),label='')
+    depth_rows=evaluate_depth_scene(str(folder),verbose=False)
+    dep=summarize_depth_results(depth_rows,label='')
     rows=[]
     for target_file in sorted((folder/'masks').glob('*.png')):
         ident=target_file.stem;target=np.asarray(Image.open(target_file))>0
@@ -75,6 +76,15 @@ def score_arm(folder):
             'protocol':'Remove360 Appendix I reference-free development subset',
             'physical_remove360_rqs':None,
             'limitations':['SAM-generated reference masks require visual review','Depth renderer and linear encoding are our declared adapter','Structural change is not physical correctness','GroundedSAM2 uses complete images, no target crop or target mask as prompt','Thresholds and test views fixed before evaluation']}
+    eligibility=folder.parent/'references/eligibility.json'
+    if eligibility.exists():
+        quality=json.loads(eligibility.read_text());ids=set(quality['complete_views'])
+        result['view_eligibility']=quality
+        sr=[r for r in semantic_rows if Path(r['image_name']).stem in ids]
+        dr=[r for r in depth_rows if r['image'] in ids]
+        st=[r for r in rows if r['view'] in ids]
+        result['complete_view_summary']={'n_views':len(sr),'semantic':summarize_semantic_results(sr,label=''),'depth':summarize_depth_results(dr,label=''),'structural_change':float(np.mean([r['structural_change'] for r in st])) if st else None}
+        result['limitations'].append('Main pilot includes flagged partial target views; complete-view summary is reported separately, matching the paper coverage restriction more closely')
     (folder/'metrics.json').write_text(json.dumps(result,indent=2))
     return result
 

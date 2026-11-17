@@ -44,7 +44,11 @@ The physical Remove360 release has photographs and masks but no trained Gaussian
 
 Report pre- and post-removal target IoU, IoU drop, and the fraction of views with post-removal IoU below 0.3. Also report target-region depth modification and `1 - sim_SAM(pre, post)`. A low detector response before editing weakens the meaning of apparent suppression. Structural change is not physical correctness. Background damage must also be inspected.
 
+The frozen full-frame evaluation category prompts are `footstool. ottoman.`, `table.`, and `potted plant.`. The table uses the broad category for the semantic probe rather than its longer editing description. These prompts are fixed before post-edit results are inspected. Detector and text thresholds are 0.4 and 0.3, following the released Grounded-SAM-2 HF example.
+
 Reference masks are generated from original renders using SAM, independently of edited images, then visually reviewed. They are pseudo-reference masks, not physical ground truth. Keep failures and any partial-coverage flags in the report.
+
+The declared held-out camera list contains partial targets, especially for the plant. The primary development summary retains supported visible target regions and flags clipped masks. A separate complete-view summary excludes those views, following the paper's G.3 coverage restriction more closely. If no complete view remains for a target, report that fact rather than substituting another camera after seeing the edited result. This partial-view pilot is a deviation from the paper's full protocol and must be labeled on the slides and report.
 
 The depth renderer produces float scene-unit values. The adapter encodes each pair with one shared linear min/max map to 8-bit values, reserving zero for invalid pixels. The official preprocessing must use `save_intermediate=True` to preserve its inverse-grayscale convention. Without that option its default path reverses the interpretation. Identical-depth and known-changed-region tests verify the bridge. This encoding is explicitly our adapter, not an undocumented claim of exact author export parity.
 

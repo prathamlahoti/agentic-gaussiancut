@@ -21,22 +21,32 @@ def main():
     css='''body{margin:0;background:#f5f7f4;color:#172c32;font:17px/1.55 Arial,sans-serif}main{max-width:1200px;margin:auto;padding:45px 30px}h1{font-size:44px;line-height:1.1;margin:0 0 18px}h2{font-size:30px;border-top:1px solid #c8d5ce;padding-top:32px;margin-top:45px}h3{font-size:22px}p{max-width:1000px}a{color:#146a57}nav{display:flex;gap:20px;flex-wrap:wrap;margin:25px 0}img{max-width:100%;height:auto;display:block}figure{margin:0}figcaption{font-size:15px;color:#445b62;margin:8px 0 20px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}.triple{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.notice{border-left:4px solid #b16c1d;padding:4px 18px;background:#f5ecd9}table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:12px 10px;text-align:left;border-bottom:1px solid #d2dbd4}th{background:#e9efea}details{margin:20px 0}summary{cursor:pointer;font-weight:bold}code{font-size:14px}footer{margin-top:40px;font-size:14px;color:#445b62}.scroll{overflow-x:auto}@media(max-width:760px){h1{font-size:32px}.pair,.triple{grid-template-columns:1fr}main{padding:24px 18px}}'''
     blocks=['<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agentic GaussianCut: experiment report</title><style>'+css+'</style><main>',
         '<h1>Agent-guided object removal from 3DGS</h1><p>One initial object mask. A VLM requests additional views. SAM segments the target, the harness checks each mask, and GaussianCut edits the 3D scene.</p>',
-        '<p class="notice">Development study on three targets in two Mip-NeRF360 scenes. Evaluation follows Remove360’s reference-free setting. These are not full physical Remove360 benchmark scores. Images below are actual renders.</p>',
+        '<p class="notice">Development study on three targets in two Mip-NeRF360 scenes using Remove360’s reference-free metrics. The primary pilot includes flagged partial target views. A complete-view summary is reported separately. These are not full physical Remove360 benchmark scores. Images below are actual renders.</p>',
         '<nav>'+''.join(f'<a href="#{esc(c["id"])}">{esc(c["target"].split(" including")[0])}</a>' for c in cfg['cases'])+'</nav>',
         '<h2>What changed since the first pilot</h2><p>The first harness accepted masks based on size. The revised harness also checks projected target coverage, agreement with the initial mask from the original camera, and frame clipping. SAM ViT-H uses target points and object-box proposals. The VLM sees accepted masks before deciding what to request next.</p>',
         '<p>The fixed-order baseline and VLM use the same tools and a maximum of four additional requests. Candidate thumbnails are already rendered. Evaluation views are held out from editing, not from training the original splat.</p>',
         '<h2>Measured results</h2><p>IoU measures overlap of the full-image object detector’s mask with the target reference. A low post-edit IoU is useful only when the object was detectable before editing. Depth and structural scores measure change, not the correctness of the exposed background.</p>',
-        '<div class="scroll"><table><thead><tr><th>Target / policy</th><th>Pre IoU</th><th>Post IoU</th><th>Non-detection @0.3</th><th>Depth change</th><th>Structural change</th></tr></thead><tbody>']
+        '<div class="scroll"><table><thead><tr><th>Target / policy</th><th>Views</th><th>Pre IoU</th><th>Post IoU</th><th>Non-detection @0.3</th><th>Depth change</th><th>Structural change</th></tr></thead><tbody>']
     rows=[]
     for case in cfg['cases']:
         for policy in ['original_v1','fixed','vlm']:
             m=indexed.get((case['id'],policy))
             if not m:continue
             s=m['semantic'];values=[s['mean_iou_before'],s['mean_iou_after'],s['acc_seg_30'],m['depth']['mean_acc_delta_depth'],m['mean_structural_change']]
-            blocks.append('<tr><td>'+esc(case['id']+' / '+policy)+'</td>'+''.join('<td>'+pct(x)+'</td>' for x in values)+'</tr>')
-            rows.append({'case':case['id'],'policy':policy,'values':values})
-    if not rows:blocks.append('<tr><td colspan="6">Evaluation has not completed. No new benchmark score is claimed.</td></tr>')
+            blocks.append('<tr><td>'+esc(case['id']+' / '+policy)+'</td><td>'+str(s['n_images'])+'</td>'+''.join('<td>'+pct(x)+'</td>' for x in values)+'</tr>')
+            rows.append({'case':case['id'],'policy':policy,'values':values,'n_views':s['n_images']})
+    if not rows:blocks.append('<tr><td colspan="7">Evaluation has not completed. No new benchmark score is claimed.</td></tr>')
     blocks.append('</tbody></table></div><p>Reference masks are SAM-generated and require visual review. Depth uses a declared common-scale encoding. See the protocol for the two tested paper/code compatibility fixes.</p>')
+    finding=HERE/'presentation/finding.txt'
+    if finding.exists():blocks.append('<p><strong>'+esc(finding.read_text().strip())+'</strong></p>')
+    if metrics:
+        blocks.append('<h3>Complete-view summary</h3><p>This subset excludes clipped target masks using only the original render. No replacement camera is selected based on the edited result.</p><div class="scroll"><table><tr><th>Target / policy</th><th>Views</th><th>Pre IoU</th><th>Post IoU</th><th>Depth change</th><th>Structural change</th></tr>')
+        for record in metrics:
+            m=record['metrics'].get('complete_view_summary',{})
+            n=m.get('n_views',0)
+            vals=[m['semantic']['mean_iou_before'],m['semantic']['mean_iou_after'],m['depth']['mean_acc_delta_depth'],m['structural_change']] if n else [None]*4
+            blocks.append('<tr><td>'+esc(record['case']+' / '+record['policy'])+'</td><td>'+str(n)+'</td>'+''.join('<td>'+(pct(v) if v is not None else 'no complete view')+'</td>' for v in vals)+'</tr>')
+        blocks.append('</table></div>')
     deck_cases=[]
     for case in cfg['cases']:
         src=a.run/'v2'/case['id'];blocks.append(f'<h2 id="{esc(case["id"])}">{esc(case["id"].replace("_"," ").title())}</h2>')
@@ -71,7 +81,16 @@ def main():
         if refs.exists():
             blocks.append('<details><summary>Reference-mask review</summary><div class="triple">')
             for f in sorted(refs.glob('*_overlay.png')):blocks.append('<figure>'+img(f,'Pseudo-reference '+f.stem)+'<figcaption>'+esc(f.stem)+'</figcaption></figure>')
-            blocks.append('</div></details>')
+            blocks.append('</div>')
+            if (refs/'eligibility.json').exists():
+                eligibility=read(refs/'eligibility.json')
+                blocks.append('<p>Scored views: '+esc(', '.join(eligibility['eligible']))+'. Complete views: '+esc(', '.join(eligibility.get('complete_views',[])) or 'none')+'. Partial views: '+esc(', '.join(eligibility.get('partial_views',[])) or 'none')+'. Exclusions were decided from pre-edit reference masks:</p><ul>')
+                for excluded in eligibility['excluded']:blocks.append('<li>'+esc(excluded['view']+': '+excluded['reason'])+'</li>')
+                blocks.append('</ul>')
+            if (refs/'manual_review.json').exists():
+                review=read(refs/'manual_review.json')
+                blocks.append('<p>Reference correction: '+esc(review['reason'])+'. One saved SAM segment was merged from the original image, adding '+str(review['added_pixels'])+' pixels. The same corrected reference scores both policies. Raw GPU scores are preserved separately.</p>')
+            blocks.append('</details>')
         deck_cases.append(case)
     blocks.append('<h2>Sources and interpretation</h2><p><a href="https://github.com/umangi-jain/gaussiancut">GaussianCut</a> performs the native edit. <a href="https://github.com/facebookresearch/segment-anything">SAM</a> segments views. <a href="https://github.com/IDEA-Research/Grounded-SAM-2">GroundedSAM2</a> probes residual object evidence. <a href="https://arxiv.org/html/2508.11431v3">Remove360, Appendix I</a> defines the evaluation setting.</p><p>The Python action harness and geometric mask gates are our implementation. 3DGSNav and AREA3D motivate the action/tool separation. Their code was not executed here. No RL, robot movement, or inpainting is included.</p><footer>Generated from saved experiment records. Every reported target and policy remains visible, including failures.</footer></main></html>')
     final=HERE/'V2 Results.html';final.write_text('\n'.join(blocks),encoding='utf-8')
