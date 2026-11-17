@@ -1,0 +1,8 @@
+numpy
+Pillow
+scipy
+matplotlib
+opencv-python-headless
+torch
+kaggle
+requests

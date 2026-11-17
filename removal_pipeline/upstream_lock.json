@@ -1,0 +1,90 @@
+{
+  "gaussiancut": {
+    "repository": "https://github.com/umangi-jain/gaussiancut",
+    "revision": "93d24a4ba02944ffae7848f9882b083cd9e04640",
+    "inspected_files": [
+      {
+        "path": "environment.yml",
+        "sha256": "7951cf8f95f7ecaf6ab99afc942e883e947d323dac42ffe5993840395bf52d6b"
+      },
+      {
+        "path": "README.md",
+        "sha256": "291c4f5a590b305ef4fe142d60feae96b47e61f2de959d95b17fa4b3d6325710"
+      },
+      {
+        "path": "gaussian-splatting/LICENSE.md",
+        "sha256": "c5ba70a2194af2aefe85dfe3da68608dcb3abd21a3aa53b55aa297c2f0b60eb3"
+      },
+      {
+        "path": "gaussian-splatting/render.py",
+        "sha256": "3d3949021947d31138ced30aac73771d7d050ac2229d630e3b0056cb95192b14"
+      },
+      {
+        "path": "gaussian-splatting/segment_render.py",
+        "sha256": "29783779a9873844679d7ab43b7a4ed790f05cc718bebf82dc7cbf27cd339ea5"
+      },
+      {
+        "path": "scripts/sample.sh",
+        "sha256": "7e67828fcb870373a82c1b03444b870a9a9c5ad1a53f067c6fb73c88c2797ebb"
+      },
+      {
+        "path": "gaussian-splatting/arguments/__init__.py",
+        "sha256": "50b46649767849751d5646655657dbb84f1567e9495505a7e356f66045fd4aa8"
+      },
+      {
+        "path": "gaussian-splatting/gaussian_renderer/__init__.py",
+        "sha256": "75fcc86a57d27d9ea55b2904a4faaf075e7f73dba8c54bcb6cbd4c02c4884084"
+      },
+      {
+        "path": "gaussian-splatting/scene/cameras.py",
+        "sha256": "f5ff25ba0f3a56485cf77c3d396cd2ff66daf18be981b16ba3bbfb887e9f12c0"
+      },
+      {
+        "path": "gaussian-splatting/scene/dataset_readers.py",
+        "sha256": "ae78091c6864c3c8bd66764546b41083052128f9cc7a33c6c3acc1104fb0ab87"
+      },
+      {
+        "path": "gaussian-splatting/scene/gaussian_model.py",
+        "sha256": "048a97af65bef2f83130b2c49157a22ffaa083cbf1c72b79b169dab603db2e4b"
+      },
+      {
+        "path": "gaussian-splatting/scene/__init__.py",
+        "sha256": "64ec4f7ef0c610ce92758dbaa813cf161c03e495e9f3fe5627dd4fd12c9f5b3e"
+      },
+      {
+        "path": "gaussian-splatting/utils/graphcut.py",
+        "sha256": "1d5fa90c264ddd0e147661f948e8c920eb1776f6d4281dd0694d3f57991ae2df"
+      },
+      {
+        "path": "gaussian-splatting/utils/render_utils.py",
+        "sha256": "acdb04bf580d88299b01051b8bff7a3bba04a7661726ed1b3a1bf68ad5cad4e7"
+      },
+      {
+        "path": "gaussian-splatting/submodules/diff-gaussian-rasterization/LICENSE.md",
+        "sha256": "cd5c95b3cfff3acc1bd412420c770f88809331c3db6872df11a970147aa8e81f"
+      }
+    ]
+  },
+  "remove360": {
+    "repository": "https://github.com/simonakocour/anything_left",
+    "revision": "dd0aad895b4d4dce75bd9f2462ad36114e813bd6",
+    "inspected_files": [
+      {
+        "path": "README.md",
+        "sha256": "31f464928b173f7e09ca2f35018d070374511c48621e9fe6d2e8c277cb8f30b3"
+      },
+      {
+        "path": "requirements.txt",
+        "sha256": "0653cb80d7ffdd5b453d4a208964fb743cf01211c42e10ff720bf01e6955348e"
+      },
+      {
+        "path": "scripts/compute_depth_diff.py",
+        "sha256": "2cec3dc3ff8db8844c9d7511898f263ac0fc48933fb768a7ffe463b4e4f6722a"
+      },
+      {
+        "path": "remove360/preprocessing/depth_diff.py",
+        "sha256": "fc8293592b7ffc461aa3fe4ec97f9c4e74f3b9019912f7b4c7f798753878d172"
+      }
+    ]
+  }
+}

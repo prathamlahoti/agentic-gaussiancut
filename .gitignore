@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+kaggle.json
+vendor/
+*_output/
+*.ply
+*.pth
+*.pt
+*.log
+*.html
+v2_presentation_data.json

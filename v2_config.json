@@ -1,0 +1,14 @@
+{
+  "protocol": "Three-target development study; Remove360 Appendix I metrics, not the physical Remove360 dataset leaderboard",
+  "seed": 20261117,
+  "max_requests": 4,
+  "vlm": "HuggingFaceTB/SmolVLM-Instruct",
+  "sam_revision": "dca509fe793f601edb92606367a655c15ac00fdf",
+  "remove360_revision": "dd0aad895b4d4dce75bd9f2462ad36114e813bd6",
+  "sam2_revision": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+  "cases": [
+    {"id":"room_footstool","scene":"room","target":"blue upholstered footstool with wooden legs","prompt":"footstool. ottoman.","seed":"v001","polygon":[[419,225],[433,220],[503,223],[515,228],[524,264],[524,274],[532,329],[524,330],[511,283],[456,279],[455,290],[438,290],[432,270],[420,265],[414,237]],"held_out":["v006","v008","v010"]},
+    {"id":"room_table","scene":"room","target":"small wooden coffee table with black metal legs in front of the sofa","prompt":"coffee table.","seed":"v016","seed_box":[217,112,423,369],"held_out":["v001","v003","v010"]},
+    {"id":"counter_plant","scene":"counter","target":"potted plant including its white pot on the kitchen counter","prompt":"potted plant.","seed":"v004","seed_box":[330,162,510,425],"held_out":["v002","v008","v015"]}
+  ]
+}
